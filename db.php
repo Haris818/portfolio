@@ -1,22 +1,21 @@
 <?php
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 $host = "db.fr-roub1.bengt.wasmernet.com";
 $port = 20184;
-$username = "db_c2ae770c";
-$password = "pw_o0fCISQob5f0jRne14MxebdUBrgwGsOa";
-$database = "db_5c933e78";
+$username = "user_58866cc0";
+$password = "pw_ucCGVi16A7h9Ao2IwI7CXo4ErKFTpHgD";
+$database = "portfolio_db";
 
-$conn = new mysqli($host, $username, $password, $database, $port);
+mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-if ($conn->connect_error) {
-    die("Database connection failed: " . $conn->connect_error);
-}
+$conn = new mysqli(
+    $host,
+    $username,
+    $password,
+    $database,
+    $port
+);
 
 $conn->set_charset("utf8mb4");
-
-echo "Database connected successfully!";
 
 ?>
