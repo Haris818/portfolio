@@ -3,7 +3,7 @@
 $host = "db.fr-roub1.bengt.wasmernet.com";
 $port = 20184;
 $username = "user_512b0390";
-$password = "YOUR_NEW_PASSWORD";
+$password = "pw_o0fCISQob5f0jRne14MxebdUBrgwGsOa";
 $database = "db_5c933e78";
 
 $conn = new mysqli($host, $username, $password, $database, $port);
