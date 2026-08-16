@@ -5,7 +5,7 @@ ini_set('display_errors', 1);
 
 $host = "db.fr-roub1.bengt.wasmernet.com";
 $port = 20184;
-$username = "user_512b0390";
+$username = "db_c2ae770c";
 $password = "pw_o0fCISQob5f0jRne14MxebdUBrgwGsOa";
 $database = "db_5c933e78";
 
