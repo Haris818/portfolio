@@ -1,19 +1,54 @@
 <?php
 
+session_start();
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+/*
+|--------------------------------------------------------------------------
+| ADMIN LOGIN CHECK
+|--------------------------------------------------------------------------
+*/
+
+if (
+    !isset($_SESSION["admin_logged_in"]) ||
+    $_SESSION["admin_logged_in"] !== true
+) {
+    header("Location: login.php");
+    exit;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| DATABASE
+|--------------------------------------------------------------------------
+*/
+
 require_once "db.php";
+
+
+/*
+|--------------------------------------------------------------------------
+| GET CONTACT MESSAGES
+|--------------------------------------------------------------------------
+*/
 
 $sql = "SELECT * FROM contact_messages ORDER BY id DESC";
 
 $result = $conn->query($sql);
 
-$totalMessages = $result ? $result->num_rows : 0;
+if (!$result) {
+    die("Database Error: " . $conn->error);
+}
+
+$totalMessages = $result->num_rows;
 
 ?>
 
 <!DOCTYPE html>
+
 <html lang="en">
 
 <head>
@@ -25,7 +60,10 @@ $totalMessages = $result ? $result->num_rows : 0;
         content="width=device-width, initial-scale=1.0"
     >
 
-    <title>Admin Dashboard | Haris Portfolio</title>
+    <title>
+        Admin Dashboard | Haris Portfolio
+    </title>
+
 
     <style>
 
@@ -35,74 +73,102 @@ $totalMessages = $result ? $result->num_rows : 0;
             padding: 0;
         }
 
+
         body {
+
             font-family:
                 Arial,
                 Helvetica,
                 sans-serif;
 
             background: #f5f7fb;
+
             color: #111827;
+
         }
 
+
         /* =========================
-           HEADER
+           TOP BAR
         ========================= */
 
         .topbar {
 
             background: #111827;
+
             color: white;
 
             padding: 18px 30px;
 
             display: flex;
+
             justify-content: space-between;
+
             align-items: center;
 
             gap: 15px;
+
         }
+
 
         .brand {
 
             display: flex;
+
             align-items: center;
+
             gap: 12px;
+
         }
+
 
         .logo {
 
             width: 45px;
+
             height: 45px;
 
             border-radius: 12px;
 
             background: white;
+
             color: #111827;
 
             display: flex;
+
             justify-content: center;
+
             align-items: center;
 
             font-size: 20px;
+
             font-weight: bold;
+
         }
 
+
         .brand h2 {
+
             font-size: 20px;
+
         }
+
 
         .brand p {
 
             color: #9ca3af;
+
             font-size: 12px;
 
             margin-top: 3px;
+
         }
+
 
         .logout {
 
             background: #ef4444;
+
             color: white;
 
             text-decoration: none;
@@ -114,10 +180,14 @@ $totalMessages = $result ? $result->num_rows : 0;
             font-size: 14px;
 
             transition: 0.2s;
+
         }
 
+
         .logout:hover {
+
             background: #dc2626;
+
         }
 
 
@@ -132,31 +202,37 @@ $totalMessages = $result ? $result->num_rows : 0;
             margin: auto;
 
             padding: 30px;
+
         }
 
 
         .welcome {
 
             margin-bottom: 25px;
+
         }
+
 
         .welcome h1 {
 
             font-size: 30px;
 
             margin-bottom: 7px;
+
         }
+
 
         .welcome p {
 
             color: #6b7280;
 
             font-size: 15px;
+
         }
 
 
         /* =========================
-           STAT CARD
+           STATS
         ========================= */
 
         .stats {
@@ -169,7 +245,9 @@ $totalMessages = $result ? $result->num_rows : 0;
             gap: 20px;
 
             margin-bottom: 30px;
+
         }
+
 
         .stat-card {
 
@@ -188,11 +266,14 @@ $totalMessages = $result ? $result->num_rows : 0;
             box-shadow:
                 0 5px 20px
                 rgba(0,0,0,0.05);
+
         }
+
 
         .stat-icon {
 
             width: 55px;
+
             height: 55px;
 
             border-radius: 13px;
@@ -202,12 +283,15 @@ $totalMessages = $result ? $result->num_rows : 0;
             display: flex;
 
             justify-content: center;
+
             align-items: center;
 
             font-size: 25px;
 
             flex-shrink: 0;
+
         }
+
 
         .stat-card span {
 
@@ -218,13 +302,16 @@ $totalMessages = $result ? $result->num_rows : 0;
             font-size: 13px;
 
             margin-bottom: 5px;
+
         }
+
 
         .stat-card strong {
 
             font-size: 25px;
 
             color: #111827;
+
         }
 
 
@@ -243,7 +330,9 @@ $totalMessages = $result ? $result->num_rows : 0;
             box-shadow:
                 0 5px 20px
                 rgba(0,0,0,0.05);
+
         }
+
 
         .message-header {
 
@@ -256,20 +345,25 @@ $totalMessages = $result ? $result->num_rows : 0;
             gap: 15px;
 
             margin-bottom: 22px;
+
         }
+
 
         .message-header h2 {
 
             font-size: 21px;
 
             margin-bottom: 5px;
+
         }
+
 
         .message-header p {
 
             color: #6b7280;
 
             font-size: 14px;
+
         }
 
 
@@ -283,18 +377,23 @@ $totalMessages = $result ? $result->num_rows : 0;
 
             padding: 12px 14px;
 
-            border: 1px solid #d1d5db;
+            border:
+
+                1px solid #d1d5db;
 
             border-radius: 9px;
 
             outline: none;
 
             font-size: 14px;
+
         }
+
 
         .search:focus {
 
             border-color: #111827;
+
         }
 
 
@@ -311,21 +410,27 @@ $totalMessages = $result ? $result->num_rows : 0;
             border-radius: 10px;
 
             -webkit-overflow-scrolling: touch;
+
         }
+
 
         table {
 
             width: 100%;
 
-            min-width: 900px;
+            min-width: 1000px;
 
             border-collapse: collapse;
+
         }
+
 
         thead {
 
             background: #f9fafb;
+
         }
+
 
         th {
 
@@ -338,58 +443,77 @@ $totalMessages = $result ? $result->num_rows : 0;
             color: #6b7280;
 
             white-space: nowrap;
+
         }
+
 
         td {
 
             padding: 16px 15px;
 
             border-top:
+
                 1px solid #eeeeee;
 
             vertical-align: top;
 
             font-size: 14px;
+
         }
+
 
         tbody tr {
 
             transition: 0.2s;
+
         }
+
 
         tbody tr:hover {
 
             background: #fafafa;
+
         }
+
 
         .id {
 
             font-weight: bold;
 
             color: #6b7280;
+
         }
+
 
         .name {
 
             font-weight: 600;
+
         }
+
 
         .email {
 
             color: #2563eb;
 
             text-decoration: none;
+
         }
+
 
         .email:hover {
 
             text-decoration: underline;
+
         }
+
 
         .subject {
 
             font-weight: 500;
+
         }
+
 
         .message {
 
@@ -400,6 +524,57 @@ $totalMessages = $result ? $result->num_rows : 0;
             color: #4b5563;
 
             word-break: break-word;
+
+        }
+
+
+        /* =========================
+           DELETE BUTTON
+        ========================= */
+
+        .delete-btn {
+
+            display: inline-flex;
+
+            align-items: center;
+
+            justify-content: center;
+
+            gap: 5px;
+
+            padding: 9px 13px;
+
+            background: #fee2e2;
+
+            color: #dc2626;
+
+            text-decoration: none;
+
+            border-radius: 8px;
+
+            font-size: 13px;
+
+            font-weight: 600;
+
+            border: 1px solid #fecaca;
+
+            cursor: pointer;
+
+            transition: all 0.2s ease;
+
+            white-space: nowrap;
+
+        }
+
+
+        .delete-btn:hover {
+
+            background: #dc2626;
+
+            color: white;
+
+            border-color: #dc2626;
+
         }
 
 
@@ -414,20 +589,25 @@ $totalMessages = $result ? $result->num_rows : 0;
             padding: 60px 20px;
 
             color: #6b7280;
+
         }
+
 
         .empty-icon {
 
             font-size: 45px;
 
             margin-bottom: 10px;
+
         }
+
 
         .empty h3 {
 
             color: #111827;
 
             margin-bottom: 6px;
+
         }
 
 
@@ -437,75 +617,107 @@ $totalMessages = $result ? $result->num_rows : 0;
 
         @media (max-width: 800px) {
 
+
             .topbar {
 
                 padding: 15px 18px;
+
             }
+
 
             .brand h2 {
 
                 font-size: 17px;
+
             }
+
 
             .brand p {
 
                 font-size: 11px;
+
             }
+
 
             .logo {
 
                 width: 40px;
+
                 height: 40px;
 
                 font-size: 18px;
+
             }
+
 
             .logout {
 
                 padding: 9px 12px;
 
                 font-size: 13px;
+
             }
+
 
             .container {
 
                 padding: 20px 15px;
+
             }
+
 
             .welcome h1 {
 
                 font-size: 25px;
+
             }
+
 
             .stats {
 
                 grid-template-columns: 1fr;
 
                 gap: 14px;
+
             }
+
 
             .stat-card {
 
                 padding: 18px;
+
             }
+
 
             .message-box {
 
                 padding: 18px;
 
                 border-radius: 13px;
+
             }
+
 
             .message-header {
 
                 flex-direction: column;
 
                 align-items: stretch;
+
             }
+
 
             .search {
 
                 width: 100%;
+
+            }
+
+
+            .table-wrapper {
+
+                margin-top: 5px;
+
             }
 
         }
@@ -517,77 +729,101 @@ $totalMessages = $result ? $result->num_rows : 0;
 
         @media (max-width: 480px) {
 
+
             .topbar {
 
                 align-items: flex-start;
+
             }
+
 
             .brand {
 
                 gap: 9px;
+
             }
+
 
             .brand h2 {
 
                 font-size: 15px;
+
             }
+
 
             .brand p {
 
                 display: none;
+
             }
+
 
             .logout {
 
                 font-size: 12px;
 
                 padding: 8px 10px;
+
             }
+
 
             .welcome h1 {
 
                 font-size: 22px;
+
             }
+
 
             .welcome p {
 
                 font-size: 13px;
+
             }
+
 
             .stat-card {
 
                 padding: 16px;
+
             }
+
 
             .stat-icon {
 
                 width: 48px;
+
                 height: 48px;
 
                 font-size: 21px;
+
             }
+
 
             .stat-card strong {
 
                 font-size: 22px;
+
             }
+
 
             .message-box {
 
                 padding: 15px;
+
             }
+
 
             .message-header h2 {
 
                 font-size: 18px;
+
             }
 
-            .table-wrapper {
 
-                margin-left: -5px;
+            table {
 
-                width:
-                    calc(100% + 10px);
+                min-width: 950px;
+
             }
 
         }
@@ -606,11 +842,14 @@ $totalMessages = $result ? $result->num_rows : 0;
 
 <header class="topbar">
 
+
     <div class="brand">
+
 
         <div class="logo">
             H
         </div>
+
 
         <div>
 
@@ -624,21 +863,29 @@ $totalMessages = $result ? $result->num_rows : 0;
 
         </div>
 
+
     </div>
 
 
     <a
         href="logout.php"
         class="logout"
+        onclick="
+            return confirm(
+                'Are you sure you want to logout?'
+            );
+        "
     >
         Logout
     </a>
 
+
 </header>
 
 
+
 <!-- =========================
-     CONTENT
+     MAIN CONTENT
 ========================= -->
 
 <main class="container">
@@ -651,10 +898,11 @@ $totalMessages = $result ? $result->num_rows : 0;
         </h1>
 
         <p>
-            Manage your portfolio contact messages.
+            Manage messages received from your portfolio.
         </p>
 
     </section>
+
 
 
     <!-- =========================
@@ -730,14 +978,16 @@ $totalMessages = $result ? $result->num_rows : 0;
     </section>
 
 
+
     <!-- =========================
-         MESSAGES
+         CONTACT MESSAGES
     ========================= -->
 
     <section class="message-box">
 
 
         <div class="message-header">
+
 
             <div>
 
@@ -746,7 +996,7 @@ $totalMessages = $result ? $result->num_rows : 0;
                 </h2>
 
                 <p>
-                    Messages received from your website.
+                    All messages submitted through your website.
                 </p>
 
             </div>
@@ -756,10 +1006,12 @@ $totalMessages = $result ? $result->num_rows : 0;
                 type="text"
                 id="search"
                 class="search"
-                placeholder="Search messages..."
+                placeholder="🔎 Search messages..."
             >
 
+
         </div>
+
 
 
         <?php if ($totalMessages > 0): ?>
@@ -795,6 +1047,10 @@ $totalMessages = $result ? $result->num_rows : 0;
                         Message
                     </th>
 
+                    <th>
+                        Action
+                    </th>
+
                 </tr>
 
                 </thead>
@@ -803,10 +1059,13 @@ $totalMessages = $result ? $result->num_rows : 0;
                 <tbody>
 
 
-                <?php while ($row = $result->fetch_assoc()): ?>
+                <?php while (
+                    $row = $result->fetch_assoc()
+                ): ?>
 
 
                 <tr>
+
 
                     <td class="id">
 
@@ -817,6 +1076,7 @@ $totalMessages = $result ? $result->num_rows : 0;
                     </td>
 
 
+
                     <td class="name">
 
                         <?= htmlspecialchars(
@@ -824,6 +1084,7 @@ $totalMessages = $result ? $result->num_rows : 0;
                         ) ?>
 
                     </td>
+
 
 
                     <td>
@@ -844,13 +1105,16 @@ $totalMessages = $result ? $result->num_rows : 0;
                     </td>
 
 
+
                     <td class="subject">
 
                         <?= htmlspecialchars(
-                            $row["subject"] ?: "No Subject"
+                            $row["subject"]
+                            ?: "No Subject"
                         ) ?>
 
                     </td>
+
 
 
                     <td class="message">
@@ -860,6 +1124,28 @@ $totalMessages = $result ? $result->num_rows : 0;
                                 $row["message"]
                             )
                         ) ?>
+
+                    </td>
+
+
+
+                    <td>
+
+
+                        <a
+                            href="delete.php?id=<?= (int)$row["id"] ?>"
+                            class="delete-btn"
+                            onclick="
+                                return confirm(
+                                    '⚠️ Are you sure you want to delete this message? This action cannot be undone.'
+                                );
+                            "
+                        >
+
+                            🗑️ Delete
+
+                        </a>
+
 
                     </td>
 
@@ -893,7 +1179,7 @@ $totalMessages = $result ? $result->num_rows : 0;
             </h3>
 
             <p>
-                Messages from your portfolio contact form
+                Messages submitted through your contact form
                 will appear here.
             </p>
 
@@ -909,8 +1195,9 @@ $totalMessages = $result ? $result->num_rows : 0;
 </main>
 
 
+
 <!-- =========================
-     SEARCH JAVASCRIPT
+     SEARCH
 ========================= -->
 
 <script>
@@ -929,29 +1216,32 @@ if (search && table) {
         function () {
 
             const value =
-                this.value.toLowerCase();
+                this.value
+                .toLowerCase()
+                .trim();
+
 
             const rows =
                 table.querySelectorAll(
                     "tbody tr"
                 );
 
-            rows.forEach(function (row) {
 
-                const text =
-                    row.textContent.toLowerCase();
+            rows.forEach(
+                function (row) {
 
-                if (text.includes(value)) {
+                    const text =
+                        row.textContent
+                        .toLowerCase();
 
-                    row.style.display = "";
 
-                } else {
-
-                    row.style.display = "none";
+                    row.style.display =
+                        text.includes(value)
+                            ? ""
+                            : "none";
 
                 }
-
-            });
+            );
 
         }
     );
@@ -964,6 +1254,7 @@ if (search && table) {
 </body>
 
 </html>
+
 
 <?php
 
