@@ -3,22 +3,24 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-require_once "../db.php";
-
-echo "<h2>Database Connected Successfully</h2>";
+require_once "db.php";
 
 $sql = "SELECT * FROM contact_messages ORDER BY id DESC";
 
 $result = $conn->query($sql);
 
-if (!$result) {
-    die("SQL ERROR: " . $conn->error);
-}
-
-echo "<p>Query Successful</p>";
-echo "<p>Total Messages: " . $result->num_rows . "</p>";
-
 ?>
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Admin Dashboard</title>
+</head>
+
+<body>
+
+<h1>Contact Messages</h1>
 
 <table border="1" cellpadding="10">
 
@@ -49,3 +51,7 @@ echo "<p>Total Messages: " . $result->num_rows . "</p>";
 <?php endwhile; ?>
 
 </table>
+
+</body>
+
+</html>
