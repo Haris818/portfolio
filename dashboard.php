@@ -3,21 +3,9 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-echo "PHP STARTED<br>";
-
 require_once "../db.php";
 
-echo "DB FILE LOADED<br>";
-
-if (!isset($conn)) {
-    die("ERROR: \$conn is not defined in db.php");
-}
-
-if ($conn->connect_error) {
-    die("DATABASE ERROR: " . $conn->connect_error);
-}
-
-echo "DATABASE CONNECTED<br>";
+echo "<h2>Database Connected Successfully</h2>";
 
 $sql = "SELECT * FROM contact_messages ORDER BY id DESC";
 
@@ -27,11 +15,10 @@ if (!$result) {
     die("SQL ERROR: " . $conn->error);
 }
 
-echo "TABLE QUERY SUCCESSFUL<br>";
+echo "<p>Query Successful</p>";
+echo "<p>Total Messages: " . $result->num_rows . "</p>";
 
 ?>
-
-<h1>Contact Messages</h1>
 
 <table border="1" cellpadding="10">
 
