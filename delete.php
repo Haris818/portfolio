@@ -1,9 +1,9 @@
 <?php
 
+session_start();
+
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
-
-session_start();
 
 
 /*
@@ -16,7 +16,7 @@ if (
     !isset($_SESSION["admin_logged_in"]) ||
     $_SESSION["admin_logged_in"] !== true
 ) {
-    header("Location: login.php");
+    header("Location: login.html");
     exit;
 }
 
@@ -42,18 +42,15 @@ $id = filter_input(
     FILTER_VALIDATE_INT
 );
 
-
 if (!$id || $id <= 0) {
-
     header("Location: dashboard.php");
-
     exit;
 }
 
 
 /*
 |--------------------------------------------------------------------------
-| DELETE MESSAGE
+| DELETE
 |--------------------------------------------------------------------------
 */
 
@@ -61,19 +58,9 @@ $stmt = $conn->prepare(
     "DELETE FROM contact_messages WHERE id = ?"
 );
 
-$stmt->bind_param(
-    "i",
-    $id
-);
+$stmt->bind_param("i", $id);
 
 $stmt->execute();
-
-
-/*
-|--------------------------------------------------------------------------
-| CLOSE
-|--------------------------------------------------------------------------
-*/
 
 $stmt->close();
 
@@ -86,10 +73,7 @@ $conn->close();
 |--------------------------------------------------------------------------
 */
 
-header(
-    "Location: dashboard.php"
-);
-
+header("Location: dashboard.php");
 exit;
 
 ?>
