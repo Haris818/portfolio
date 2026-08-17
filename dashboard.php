@@ -1,23 +1,35 @@
 <?php
 
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+echo "PHP STARTED<br>";
+
 require_once "../db.php";
+
+echo "DB FILE LOADED<br>";
+
+if (!isset($conn)) {
+    die("ERROR: \$conn is not defined in db.php");
+}
+
+if ($conn->connect_error) {
+    die("DATABASE ERROR: " . $conn->connect_error);
+}
+
+echo "DATABASE CONNECTED<br>";
 
 $sql = "SELECT * FROM contact_messages ORDER BY id DESC";
 
 $result = $conn->query($sql);
 
+if (!$result) {
+    die("SQL ERROR: " . $conn->error);
+}
+
+echo "TABLE QUERY SUCCESSFUL<br>";
+
 ?>
-
-<!DOCTYPE html>
-<html>
-
-<head>
-
-    <title>Admin Dashboard</title>
-
-</head>
-
-<body>
 
 <h1>Contact Messages</h1>
 
@@ -35,32 +47,18 @@ $result = $conn->query($sql);
 
 <tr>
 
-    <td>
-        <?= htmlspecialchars($row["id"]) ?>
-    </td>
+    <td><?= htmlspecialchars($row["id"]) ?></td>
 
-    <td>
-        <?= htmlspecialchars($row["name"]) ?>
-    </td>
+    <td><?= htmlspecialchars($row["name"]) ?></td>
 
-    <td>
-        <?= htmlspecialchars($row["email"]) ?>
-    </td>
+    <td><?= htmlspecialchars($row["email"]) ?></td>
 
-    <td>
-        <?= htmlspecialchars($row["subject"]) ?>
-    </td>
+    <td><?= htmlspecialchars($row["subject"]) ?></td>
 
-    <td>
-        <?= nl2br(htmlspecialchars($row["message"])) ?>
-    </td>
+    <td><?= nl2br(htmlspecialchars($row["message"])) ?></td>
 
 </tr>
 
 <?php endwhile; ?>
 
 </table>
-
-</body>
-
-</html>
